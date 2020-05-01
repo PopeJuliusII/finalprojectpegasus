@@ -1,0 +1,8 @@
+const StoreActionTypes = {
+  TOGGLE_STORE_HIDDEN: 'TOGGLE_STORE_HIDDEN',
+  ADD_ITEM: 'ADD_ITEM',
+  REMOVE_ITEM: 'REMOVE_ITEM',
+  CLEAR_ITEM_FROM_STORE: 'CLEAR_ITEM_FROM_STORE'
+};
+
+export default StoreActionTypes;
