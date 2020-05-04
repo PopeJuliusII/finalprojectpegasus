@@ -9,7 +9,10 @@ def schema():
         sql_1 = """
         CREATE TABLE IF NOT EXISTS users(
         pk INTEGER PRIMARY KEY AUTOINCREMENT,
+        id VARCHAR(120),
         email VARCHAR(120),
+        UNIQUE(email),
+        UNIQUE(id)
         );
         """
 
@@ -39,35 +42,19 @@ def schema():
         """
 
         sql_4 = """
-        CREATE TABLE IF NOT EXISTS users(
+        CREATE TABLE IF NOT EXISTS saved(
         pk INTEGER PRIMARY KEY AUTOINCREMENT,
         userid VARCHAR(120),
-        UNIQUE(name)
-        );
-        """
-        sql_5 = """
-        CREATE TABLE IF NOT EXISTS users(
-        pk INTEGER PRIMARY KEY AUTOINCREMENT,
-        userid VARCHAR(120),
-        UNIQUE(name)
-        );
-        """
-        sql_6 = """
-        CREATE TABLE IF NOT EXISTS users(
-        pk INTEGER PRIMARY KEY AUTOINCREMENT,
-        userid VARCHAR(120),
-        UNIQUE(name)
-        );
-        """
-        sql_7 = """
-        CREATE TABLE IF NOT EXISTS users(
-        pk INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id VARCHAR(120),
-        UNIQUE(name)
+        name VARCHAR(120),
+        category VARCHAR(120),
+        address VARCHAR(120),
+        latitude REAL,
+        longitude REAL,
+        UNIQUE(userid, name)
         );
         """
 
-        sql_8 = """
+        sql_5 = """
         CREATE TABLE IF NOT EXISTS preference_ids(
         pk INTEGER PRIMARY KEY AUTOINCREMENT,
         attraction_name VARCHAR(120),
@@ -76,7 +63,7 @@ def schema():
         );
         """
 
-        sql_9 = """
+        sql_6 = """
         CREATE TABLE IF NOT EXISTS tube_stations(
         pk INTEGER PRIMARY KEY AUTOINCREMENT,
         station_id INTEGER,
@@ -92,11 +79,11 @@ def schema():
         gtfs_longitude REAL,
         north_direction_label VARCHAR(60),
         south_direction_label VARCHAR(60),
-        UNIQUE(station_id)
+        UNIQUE(gtfs_stop_id)
         );
         """
 
-        for sql in [sql_1, sql_2, sql_3, sql_4, sql_5, sql_6, sql_7, sql_8, sql_9]:
+        for sql in [sql_1, sql_2, sql_3, sql_4, sql_5, sql_6]:
             cur.execute(sql)
 
 

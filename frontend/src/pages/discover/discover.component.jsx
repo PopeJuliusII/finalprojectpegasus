@@ -1,4 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import { createStructuredSelector } from 'reselect';
+
+import { selectCurrentUser } from '../../redux/user/user.selectors';
+
 import { DiscoverContainer } from './discover.styles.jsx';
 
 const getLocation = () => {
@@ -9,23 +14,39 @@ const getLocation = () => {
   }
 }
 
-const sendPosition = position => {
+const sendPosition = (position) => {
   const lat = position.coords.latitude
   const lan = position.coords.longitude
   console.log(`${lat}, ${lan}`)
-  console.log('HELLOOOO')
+  // const email =
+  const data = JSON.stringify({email:'a', lat:lat, lon:lan})
+  console.log(data)
+//     (async () => {
+//     const rawResponse = await fetch('http://localhost:5000/test',{
+//         method: 'POST',
+//         headers:{
+//         'Accept': 'application/json',
+//         'Content-Type': 'application/json'
+//         },
+//         body: data
+//     });
+// })
 }
 
-const test = async () => {
-    setInterval(function(){ console.log('hello'); }, 3000);
+const sendLoc = async (email) => {
+    setInterval(function(){console.log(email);}, 3000);
     }
 
-const Discover = () => {
-    test()
+const Discover = ({ currentUser }) => {
+    currentUser ? sendLoc(currentUser.email) : sendLoc(null)
     return (
     <DiscoverContainer>
     <p>Hello</p>
     </DiscoverContainer>
 )};
 
-export default Discover;
+const mapStateToProps = createStructuredSelector({
+    currentUser: selectCurrentUser
+})
+
+export default connect(mapStateToProps)(Discover);
