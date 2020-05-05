@@ -1,17 +1,19 @@
-import os
-import sqlite3
 from .parent import ORM
 
 
 class TubeStations(ORM):
+    """
+    Only find_one is to be used.
+    """
     tablename = 'tube_stations'
-    fieldnames = [
+    fields = [
         'station_id', 'complex_id', 'gtfs_stop_id',
         'division', 'line', 'stop_name', 'borough',
-                    'daytime_routes', 'structure', 'gtfs_latitude',
-                    'gtfs_longitude', 'north_direction_label',
-                    'south_direction_label'
+        'daytime_routes', 'structure', 'gtfs_latitude',
+        'gtfs_longitude', 'north_direction_label',
+        'south_direction_label'
     ]
+    filepath = ''
 
     def __init__(self, **kwargs):
         self.pk = kwargs.get('pk')

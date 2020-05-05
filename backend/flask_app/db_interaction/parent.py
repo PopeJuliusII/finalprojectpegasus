@@ -3,33 +3,11 @@ import sqlite3
 
 
 class ORM:
-    """
-    The parent class.
-    """
-    dbpath = ''
-    tablename = ''
-    fields = ['']
-    pk = None
 
     def __init__(self, **kwargs):
         raise NotImplementedError
 
-    def save(self):
-        """
-        Calls either the private function insert
-        or the private function save depending on
-        whether a pk is detected.
-        """
-        if self.pk is None:
-            self._insert()
-        else:
-            self._update()
-
-    def _insert(self):
-        """
-        Adds the instance to the database as a new
-        entry.
-        """
+    def insert(self):
         with sqlite3.connect(self.dbpath) as connection:
             cursor = connection.cursor()
             fieldslist = ", ".join(self.fields)
@@ -38,39 +16,43 @@ class ORM:
             values = list(self.__dict__.values())[1:]
             cursor.execute(sql, values)
 
-    def _update(self):
-        """
-        Updates the corresponding pk's entry in the database.
-        """
+    def update(self, field, value, field_two=1, value_two=1, order_by=''):
         with sqlite3.connect(self.dbpath) as connection:
             cursor = connection.cursor()
             fieldslist = "=?, ".join(self.fields) + '=?'
-            sql = f"""UPDATE {self.tablename} SET {fieldslist} WHERE pk=?;"""
-            values = list(self.__dict__.values())[1:] + [self.pk]
+            sql = f"""
+            UPDATE {self.tablename}
+            SET {fieldslist}
+            WHERE {field}={value} AND {field_two}={value_two}
+            {order_by}
+            ;"""
+            values = list(self.__dict__.values())
             cursor.execute(sql, values)
+
+    def delete(self, field, value, field_two=1, value_two=1):
+        with sqlite3.connect(self.dbpath) as connection:
+            cursor = connection.cursor()
+            sql = f"""
+            DELETE FROM {self.tablename}
+            WHERE {field}=? AND {field_two}=?;"""
+            cursor.execute(sql, (value, value_two))
 
     @classmethod
     def find_all(cls, field, value):
-        """
-        Shows all rows from the corresponding table.
-        """
-        sql = f"""SELECT * FROM {cls.tablename} WHERE {field}={value};"""
+        sql = f"""SELECT * FROM {cls.tablename} WHERE {field}=?;"""
         with sqlite3.connect(cls.dbpath) as connection:
             connection.row_factory = sqlite3.Row
             cursor = connection.cursor()
-            cursor.execute(sql)
+            cursor.execute(sql, (value,))
             rows = cursor.fetchall()
             return [cls(**row) for row in rows]
 
     @classmethod
-    def find_one(cls):
-        """
-        Shows all rows from the corresponding table.
-        """
-        sql = f"""SELECT * FROM {cls.tablename};"""
+    def find_one(cls, field, value):
         with sqlite3.connect(cls.dbpath) as connection:
             connection.row_factory = sqlite3.Row
             cursor = connection.cursor()
+            sql = f"""SELECT * FROM {cls.tablename} WHERE {field}='{value}';"""
             cursor.execute(sql)
-            rows = cursor.fetchall()
-            return [cls(**row) for row in rows]
+            row = cursor.fetchone()
+            return cls(**row)
