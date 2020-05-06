@@ -17,3 +17,6 @@ class Preferences(ORM):
         self.vegetarian = kwargs.get('vegetarian')
         self.italian = kwargs.get('italian')
         self.kosher = kwargs.get('kosher')
+
+    def __repr__(self):
+        return ''

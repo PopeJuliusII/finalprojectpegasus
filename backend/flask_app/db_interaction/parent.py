@@ -19,14 +19,14 @@ class ORM:
     def update(self, field, value, field_two=1, value_two=1, order_by=''):
         with sqlite3.connect(self.dbpath) as connection:
             cursor = connection.cursor()
-            fieldslist = "=?, ".join(self.fields) + '=?'
+            fieldslist = "=?, ".join(self.fields[1:]) + '=?'
             sql = f"""
             UPDATE {self.tablename}
             SET {fieldslist}
             WHERE {field}={value} AND {field_two}={value_two}
             {order_by}
             ;"""
-            values = list(self.__dict__.values())
+            values = list(self.__dict__.values())[2:]
             cursor.execute(sql, values)
 
     def delete(self, field, value, field_two=1, value_two=1):
@@ -45,14 +45,14 @@ class ORM:
             cursor = connection.cursor()
             cursor.execute(sql, (value,))
             rows = cursor.fetchall()
-            return [cls(**row) for row in rows]
+            return [cls(**row) for row in rows] if rows else None
 
     @classmethod
     def find_one(cls, field, value):
         with sqlite3.connect(cls.dbpath) as connection:
             connection.row_factory = sqlite3.Row
             cursor = connection.cursor()
-            sql = f"""SELECT * FROM {cls.tablename} WHERE {field}='{value}';"""
-            cursor.execute(sql)
+            sql = f"""SELECT * FROM {cls.tablename} WHERE {field}=?;"""
+            cursor.execute(sql, (value,))
             row = cursor.fetchone()
             return cls(**row)
