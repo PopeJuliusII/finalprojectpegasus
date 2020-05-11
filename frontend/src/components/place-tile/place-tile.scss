@@ -1,0 +1,12 @@
+.place-details {
+width: 100%;
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+justify-content: center;
+padding: 10px 20px;
+
+    .name {
+      font-size: 20px;
+    }
+}

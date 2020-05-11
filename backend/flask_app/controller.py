@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from os import path
-from db_interaction import ORM, Saved, Users, Preferences
+from db_interaction import ORM, Saved, Users, Preferences, TubeStations, Trips, PreferenceIds
 from sqlite3 import IntegrityError
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -26,7 +27,7 @@ def get_data(id, email):
     prefs = Preferences.find_one('userid', pk)
     saved = Saved.find_all('userid', pk)
     return jsonify({f'data':
-                    {'saved': {k: v for k, v in saved.__dict__.items() if k not in ['pk', 'userid']} if saved else None,
+                    {'saved': [{k: v for k, v in place.__dict__.items()} for place in saved] if saved else None,
                      'prefs': {k: v for k, v in prefs.__dict__.items() if k not in ['pk', 'userid']}}})
 
 
@@ -65,27 +66,31 @@ def add_preferences():
     return jsonify({'data': 'success'})
 
 
-@app.route('/get_recommendation', methods=["POST"])
-def get_rec():
+@app.route('/get_recommendation', methods=["GET", "POST"])
+def get_recommendation():
     data = request.get_json()
     if not data.get('id'):
         return jsonify({'message': 'Log in or sign up.'})
-    pk = Users.find_one('id', id).pk
-    return {'data': f'{pk}'}
-
-    # check if near station
-    # if yes:
-    # check if most recent trip was less than five minutes hence
-    # if yes:
-    # update entry
-    # if no:
-    # new entry
-    # save to trips
-    # get prefs
-    # send recommendations
-    # if no:
-    # return nothing.
-    return jsonify({'data': ''})
+    pk = Users.find_one('id', data.get('id')).pk
+    lat, lon = float(data.get('lat')), float(data.get('lon'))
+    station = TubeStations.find_closest(lat, lon)
+    if not station:
+        return jsonify({'message': 'too far to rec'})
+    Trips.new_entry(station.stop_name, pk)
+    # return {'data': f'{pk, lat, lon, station.stop_name}'}
+    prefs = Preferences.find_one('userid', pk)
+    prefs = {k: v for k, v in prefs.__dict__.items() if k not in ['pk', 'userid']}
+    query = []
+    for key in prefs.keys():
+        if prefs[key] == 1:
+            fs_id = PreferenceIds.get_id(key)
+            query.append(fs_id[0]) if fs_id else None
+    print(query)
+    cats = '&categoryId=' + ','.join(query) if query else None
+    print(cats)
+    response = requests.get(f"https://api.foursquare.com/v2/venues/search?&client_id=SPJKIIRUO1MO0VEZQ4YC1VBIGUVJ3IBVYQIS5MWLRO0D53K0&client_secret=JAISUVIQTX44KNXZ0N2FOMJ1FCKARINB5OCFLJWQ1XVAU42V&ll={lat},{lon}&v=20200404&limit=50&radius=100{cats}")
+    response = response.json()
+    return jsonify({'data': response['response']['venues']})
 
 
 if __name__ == "__main__":

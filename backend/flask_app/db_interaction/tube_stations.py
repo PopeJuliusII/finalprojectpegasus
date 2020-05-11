@@ -1,4 +1,5 @@
 from .parent import ORM
+from math import cos, radians
 
 
 class TubeStations(ORM):
@@ -30,3 +31,15 @@ class TubeStations(ORM):
         self.gtfs_longitude = kwargs.get('gtfs_longitude')
         self.north_direction_label = kwargs.get('north_direction_label')
         self.south_direction_label = kwargs.get('south_direction_label')
+
+    @classmethod
+    def find_closest(cls, lat, lon):
+        station_list = TubeStations.find_all(1, 1)
+        for station in station_list:
+            # Length in meters of 1° of latitude = always 111.32 km
+            # Length in meters of 1° of longitude = 40075 km * cos( latitude ) / 360
+            latitude = abs(abs(float(station.gtfs_latitude)) - abs(lat)) * 111.32
+            longitude = abs(abs(float(station.gtfs_longitude)) - abs(lon)) * cos(radians(latitude)) * 40075 / 360
+            station.dist = (longitude ** 2 + latitude ** 2) ** 0.5
+        x = sorted(station_list, key=(lambda x: x.dist))
+        return x[0] if x[0].dist < 0.2 else None

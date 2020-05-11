@@ -1,0 +1,7 @@
+const SavedActionTypes = {
+  FETCH_SAVED_START: 'FETCH_SAVED_START',
+  FETCH_SAVED_SUCCESS: 'FETCH_SAVED_SUCCESS',
+  FETCH_SAVED_FAILURE: 'FETCH_SAVED_FAILURE'
+};
+
+export default SavedActionTypes;
