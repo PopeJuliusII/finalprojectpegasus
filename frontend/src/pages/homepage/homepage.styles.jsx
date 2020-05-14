@@ -23,6 +23,7 @@ export const HomePageImageContainer = styled.div`
     justify-content: center;
     color: white;
     font-size: 90px;
+    transition: 6s;
     &:hover {
           cursor: pointer;
           transform: scale(1.1);

@@ -27,15 +27,38 @@ const Profile = ({ currentUser }) => {
           }
       }
 
+      const updateData = async (val) => {
+          try {
+            const url = 'http://localhost:5000/add_preferences';
+            const k = val.slice(0,-1);
+            const v = parseInt(val[val.length - 1])
+            console.log(preferences)
+            const changed = preferences
+            changed[k] = v
+            console.log(changed)
+            const data = JSON.stringify({id:currentUser.id, k:v, ...preferences})
+            const rawResponse = await fetch(url,{
+                method: 'POST',
+                headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: data
+            });
+            fetchData({ currentUser })
+        } catch(e){
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
         fetchData({ currentUser })
     }, [])
 
     const handleChange = event => {
-        console.log(event)
-        const { name, sentiment } = event.target;
-        console.log(event.target.name)
-        console.log('hello, Greg!')
+        const val = event.target.value;
+        console.log(val)
+        updateData(val)
     }
 
     return(

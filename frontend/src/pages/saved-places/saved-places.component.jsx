@@ -27,9 +27,32 @@ const SavedPlaces = ({ currentUser }) => {
           }
       }
 
+      const updateData = async (name) => {
+          try {
+            const url = 'http://localhost:5000/del_saved'
+            const data = JSON.stringify({id:currentUser.id, name:name})
+            const rawResponse = await fetch(url,{
+                method: 'POST',
+                headers:{
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+                },
+                body: data
+            });
+            fetchData({ currentUser })
+        } catch(e){
+            console.log(e)
+        }
+    }
+
     useEffect(() => {
         fetchData({ currentUser })
     }, [])
+
+    const handleClick = (event) => {
+        const name = event.target.value;
+        updateData(name)
+    }
 
     return(
     <SavedPageContainer>
@@ -40,7 +63,7 @@ const SavedPlaces = ({ currentUser }) => {
                 place.categories = new Array({name: place.category})
                 console.log(place.categories)
                 return (
-                    <PlaceTile key={place.name} {...place} />
+                    <PlaceTile key={place.name} {...place} icon='s' handleClick={handleClick} />
                 )})
                 :
             <h3>Log in to store your favourite places!</h3>

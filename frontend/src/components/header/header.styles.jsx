@@ -13,10 +13,11 @@ export const LogoContainer = styled(Link)`
     height: 100%;
     width: 70px;
     padding: 25px;
+    transition: 0.5s;
     &:hover {
         cursor: pointer;
         transform: scale(1.2, 1.2) translate(16%, -8.75%);
-        transition: transform 0.25s;
+        transition: transform 0.5s;
 }
 `;
 

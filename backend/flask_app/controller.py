@@ -27,7 +27,7 @@ def get_data(id, email):
     prefs = Preferences.find_one('userid', pk)
     saved = Saved.find_all('userid', pk)
     return jsonify({f'data':
-                    {'saved': [{k: v for k, v in place.__dict__.items()} for place in saved] if saved else None,
+                    {'saved': [{k: v for k, v in place.__dict__.items()} for place in saved] if saved else [],
                      'prefs': {k: v for k, v in prefs.__dict__.items() if k not in ['pk', 'userid']}}})
 
 
@@ -86,10 +86,11 @@ def get_recommendation():
             fs_id = PreferenceIds.get_id(key)
             query.append(fs_id[0]) if fs_id else None
     print(query)
-    cats = '&categoryId=' + ','.join(query) if query else None
+    cats = '&categoryId=' + ','.join(query) if query else ''
     print(cats)
     response = requests.get(f"https://api.foursquare.com/v2/venues/search?&client_id=SPJKIIRUO1MO0VEZQ4YC1VBIGUVJ3IBVYQIS5MWLRO0D53K0&client_secret=JAISUVIQTX44KNXZ0N2FOMJ1FCKARINB5OCFLJWQ1XVAU42V&ll={lat},{lon}&v=20200404&limit=50&radius=100{cats}")
     response = response.json()
+    print(response)
     return jsonify({'data': response['response']['venues']})
 
 

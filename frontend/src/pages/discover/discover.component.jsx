@@ -34,6 +34,47 @@ const Discover = ({ currentUser }) => {
         timer()
     }, [currentUser])
 
+    const updateData = async (entryIndex) => {
+        try {
+          const url = 'http://localhost:5000/add_saved'
+          const entry = recs[entryIndex]
+          const data = JSON.stringify({
+              id: currentUser.id,
+              name: entry.name,
+              category: entry.categories[0].name,
+              address: entry.location.address,
+              latitude: entry.location.lat,
+              longitude: entry.location.lng})
+          console.log(data)
+          console.log(entry)
+          const rawResponse = await fetch(url,{
+              method: 'POST',
+              headers:{
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+              },
+              body: data
+          });
+      } catch(e){
+          console.log(e)
+      }
+  }
+
+    const handleClick = (event) => {
+        const name = event.target.value;
+        //TODO: pass current user
+        console.log(name)
+        console.log(recs)
+        for(let i = 0; i < recs.length; i++){
+            if (recs[i].name === name){
+                var entryIndex = i
+                break
+            }
+        }
+        console.log(entryIndex)
+        updateData(entryIndex)
+    }
+
     const timer = () => {
         setInterval(function(){
             fetchRec()
@@ -53,10 +94,9 @@ const Discover = ({ currentUser }) => {
     const sendPosition = ( position ) => {
       const lat = position.coords.latitude
       const lon = position.coords.longitude
-      console.log('a')
       if (lat !== coordinates[0] && lon !== coordinates[1]) {
-          console.log('fail')
           setCoordinates([lat, lon])
+          console.log('test')
   }}
 
   const recCenter = async () => {
@@ -76,7 +116,6 @@ const Discover = ({ currentUser }) => {
           });
           const output = await rawResponse.json()
           setRecs(output.data)
-          console.log(recs)
       } catch(e) {
           console.log(e)
       }
@@ -90,9 +129,9 @@ const Discover = ({ currentUser }) => {
         </DiscoverPageMapContainer>
         <DiscoverRecsContainer>
             { recs.length > 0 ?
-                recs.map(rec => (<PlaceTile key={rec.id} {...rec} />))
+                recs.map(rec => (<PlaceTile key={rec.id} {...rec} icon='d' handleClick={handleClick} />))
                 :
-            <h3>Log in to get recommendations!</h3>
+            <h3 onClick={() => console.log(coordinates)}>Log in to get recommendations!</h3>
 
         }
         </DiscoverRecsContainer>

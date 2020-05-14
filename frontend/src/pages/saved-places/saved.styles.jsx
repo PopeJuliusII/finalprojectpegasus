@@ -25,6 +25,7 @@ export const SavedPageMapContainer = styled.div`
     display: flex;
     align-items: center;
     border: 1px solid;
+    transition: 6s;
     &:hover {
           cursor: pointer;
           transform: scale(1.1);

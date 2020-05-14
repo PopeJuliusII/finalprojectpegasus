@@ -8,7 +8,7 @@ const PrefTile = ({ name, sentiment, handleChange }) => {
         <Tiling>
             <TogglePart>
                 <label className="switch">
-                    <input type="checkbox" checked={sentiment} onChange={handleChange}/>
+                    <input type="checkbox" checked={sentiment} value={`${name}${sentiment ? '0' : '1'}`} onChange={handleChange}/>
                     <span className="slider round"></span>
                 </label>
             </TogglePart>
